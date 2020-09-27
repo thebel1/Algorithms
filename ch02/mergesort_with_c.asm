@@ -164,7 +164,7 @@ mergesort:
             sub     rax, r13
             shr     rax, 0x1
             mov     r15, r13
-            add     r15, rax                            ; int midIdx
+            add     r15, rax
 
 ;       mergesort(arr, loIdx, midIdx);
             mov     rdi, r12
@@ -262,13 +262,13 @@ merge:
             mov     dword [rax + rbx], INT_MAX
 
 ;       int i = 0;
-            mov     r8, 0x0                             ; i
+            mov     r8, 0x0
 
 ;       int j = 0;
-            mov     r9, 0x0                             ; j
+            mov     r9, 0x0
 
 ;       int k = loIdx;
-            mov     r10, r13                            ; k
+            mov     r10, r13
 
 ;       while (k <= hiIdx) {
 merge_Loop:
