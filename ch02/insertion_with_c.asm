@@ -128,13 +128,13 @@ atoi:
             mov     rcx, 0x1
 
 ;       int sum = 0;
-            mov     r8, 0x0                             ; Sum
+            mov     r8, 0x0
 
 ;       char cur = *str;
             movzx   r9, byte [rdi]
 
 ;       if (cur == '-') {
-            cmp     r9, 0x2d                            ; ASCII '-'
+            cmp     r9, 0x2d
 
 ;           sign = -1;
             mov     r10, -0x1
@@ -159,7 +159,7 @@ atoi_Loop:
             mov     rax, r8
             mov     r10, 0xa
             mul     r10
-            lea     r8, [rax + r9 - 0x30]               ; prev + curr
+            lea     r8, [rax + r9 - 0x30]
 
 ;           ++i;
             inc     rsi
@@ -184,30 +184,30 @@ atoi_Loop:
 isort:
 
 ;       int j = 1;
-            mov     rdx, 0x1                            ; j
+            mov     rdx, 0x1
 
 ;       do {
 isort_OuterLoop:
 
 ;           int key = arr[j];
-            mov     r8d, dword [rdi + rdx*0x4]          ; int key = arr[j]
+            mov     r8d, dword [rdi + rdx*0x4]
 
 ;           int i = j - 1;
-            lea     rcx, [rdx - 0x1]                    ; i
+            lea     rcx, [rdx - 0x1]
 
 ;           do {
 isort_InnerLoop:
 
 ;               int cur = arr[i];
-            mov     r9d, dword [rdi + rcx*0x4]          ; arr[i]
+            mov     r9d, dword [rdi + rcx*0x4]
 
 ;               if (i < 1 && cur <= key) {
             mov     r10, 0x1
             cmp     rcx, 0x0
             mov     rax, 0x0
-            cmovl   r10, rax                            ; i >= 0
+            cmovl   r10, rax
             cmp     r9d, r8d
-            cmovle  r10, rax                            ; a[i] > key
+            cmovle  r10, rax
             test    r10d, r10d
 
 ;                   break;
@@ -218,7 +218,7 @@ isort_InnerLoop:
             mov     dword [rdi + (rcx + 0x1)*0x4], r9d  ; arr[i + 1] = arr[i]
 
 ;               --i;
-            dec     rcx                                 ; --i
+            dec     rcx
 
 ;           } while (1);
             jmp     isort_InnerLoop
@@ -226,7 +226,7 @@ isort_InnerLoop:
 isort_InnerBreak:
 
 ;       arr[i + 1] = key;
-            mov     dword [rdi + (rcx + 0x1)*0x4], r8d  ; arr[i + 1] = key
+            mov     dword [rdi + (rcx + 0x1)*0x4], r8d
 
 ;       ++j;
             inc     rdx
