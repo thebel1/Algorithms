@@ -215,7 +215,7 @@ isort_InnerLoop:
             je      isort_InnerBreak
 
 ;               arr[i + 1] = arr[i];
-            mov     dword [rdi + (rcx + 0x1)*0x4], r9d  ; arr[i + 1] = arr[i]
+            mov     dword [rdi + (rcx + 0x1)*0x4], r9d
 
 ;               --i;
             dec     rcx
