@@ -5,6 +5,8 @@
             extern  free
             extern  printf
 
+INT_MIN     equ     0x80000001
+
 struc       SubArray
             .loIdx  resd    1
             .hiIdx  resd    1
@@ -13,7 +15,7 @@ endstruc
 
             section .data
 
-outFmt      db      "%d", 0x0a, 0x0
+outFmt      db      "%d", 0xa, 0x0
 
             section .text
 
@@ -86,10 +88,80 @@ maxSubArray:
             push    r14
             push    r15
             sub     rsp, 0x18
+            mov     r12, rdi
+            mov     r13, rsi
+            mov     r14, rdx
+            cmp     rsi, rdx
+            je      maxSubArray_singleReturn
+            mov     r15, r13
+            add     r15, r14
+            shr     r15, 0x1
+            mov     rdi, r12
+            mov     rsi, r13
+            mov     rdx, r15
+            call    maxSubArray
+            mov     qword [rsp + 0x10], rax
+            mov     rdi, r12
+            lea     rsi, [r15 + 0x1]
+            mov     rdx, r14
+            call    maxSubArray
+            mov     qword [rsp + 0x8], rax
+            mov     rdi, r12
+            mov     rsi, r13
+            mov     rdx, r15
+            mov     rcx, r14
+            call    maxCrossingSubArray
+            mov     qword [rsp], rax
+            mov     rax, qword [rsp + 0x10]
+            mov     eax, dword [rax + SubArray.sum]
+            mov     rcx, qword [rsp + 0x8]
+            mov     ecx, dword [rcx + SubArray.sum]
+            mov     rdx, qword [rsp]
+            mov     edx, dword [rdx + SubArray.sum]
+            mov     r10, 0x1
+            mov     r11, 0x0
+            cmp     rax, rcx
+            cmovl   r10, r11
+            cmp     rax, rdx
+            cmovl   r10, r11
+            test    r10, r10
+            cmovne  rax, qword [rsp + 0x10]
+            jne     maxSubArray_Leave
+            mov     r10, 0x1
+            cmp     rcx, rax
+            cmovl   r10, r11
+            cmp     rcx, rdx
+            cmovl   r10, r11
+            test    r10, r10
+            cmovne  rax, qword [rsp + 0x8]
+            jne     maxSubArray_Leave
+            mov     rax, qword [rsp]
+maxSubArray_Leave:
             ud2
             add     rsp, 0x18
             pop     r15
             pop     r14
             pop     r13
             pop     r12
+            ret
+maxSubArray_singleReturn:
+            mov     rdi, SubArray_size
+            call    malloc
+            mov     ecx, dword [r12 + r13*0x4]
+            mov     dword [rax + SubArray.loIdx], r13d
+            mov     dword [rax + SubArray.hiIdx], r14d
+            mov     dword [rax + SubArray.sum], ecx
+            add     rsp, 0x18
+            pop     r15
+            pop     r14
+            pop     r13
+            pop     r12
+            ret
+
+; ------------------------------------------------------------------------------
+; -- SubArray *maxCrossingSubArray(int *arr, int loIdx, int midIdx, int hiIdx);
+; ------------------------------------------------------------------------------
+maxCrossingSubArray:
+
+            ud2
             ret

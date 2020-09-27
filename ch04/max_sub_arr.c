@@ -17,7 +17,7 @@ SubArray *maxCrossingSubArray(int *arr, int loIdx, int midIdx, int hiIdx)
 
     subArr = malloc(sizeof(*subArr));
 
-    leftSum = -INT_MAX;
+    leftSum = INT_MIN;
     sum = 0;
     for (int i = midIdx; i >= loIdx; --i) {
         sum += arr[i];
@@ -27,7 +27,7 @@ SubArray *maxCrossingSubArray(int *arr, int loIdx, int midIdx, int hiIdx)
         }
     }
 
-    rightSum = -INT_MAX;
+    rightSum = INT_MIN;
     sum = 0;
     for (int j = midIdx + 1; j <= hiIdx; ++j) {
         sum += arr[j];
