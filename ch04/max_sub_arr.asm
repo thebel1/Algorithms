@@ -13,7 +13,7 @@ endstruc
 
             section .data
 
-outFmt      db      "%d", 0xa, 0x0
+outFmt      db      "%d", 0x0a, 0x0
 
             section .text
 
