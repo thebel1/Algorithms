@@ -5,7 +5,7 @@
             extern  free
             extern  printf
 
-INT_MIN     equ     0x80000001
+INT_MIN     equ     0x80000000
 
 struc       SubArray
             .loIdx  resd    1
@@ -137,7 +137,6 @@ maxSubArray:
             jne     maxSubArray_Leave
             mov     rax, qword [rsp]
 maxSubArray_Leave:
-            ud2
             add     rsp, 0x18
             pop     r15
             pop     r14
@@ -162,6 +161,39 @@ maxSubArray_singleReturn:
 ; -- SubArray *maxCrossingSubArray(int *arr, int loIdx, int midIdx, int hiIdx);
 ; ------------------------------------------------------------------------------
 maxCrossingSubArray:
-
-            ud2
+            push    r12
+            push    r13
+            push    r14
+            mov     eax, INT_MIN
+            movsxd  r8, eax
+            movsxd  r9, eax
+            mov     r10, 0x0
+            mov     r11, rdx
+maxCrossingSubArray_leftLoop:
+            add     r10d, dword [rdi + r11*0x4]
+            cmp     r10, r8
+            cmovg   r8, r10
+            cmovg   r12, r11
+            dec     r11
+            cmp     r11, rsi
+            jge     maxCrossingSubArray_leftLoop
+            mov     r10, 0x0
+            lea     r11, [rdx + 0x1]
+maxCrossingSubArray_rightLoop:
+            add     r10d, dword [rdi + r11*0x4]
+            cmp     r10, r9
+            cmovg   r9, r10
+            cmovg   r13, r11
+            inc     r11
+            cmp     r11, rcx
+            jle     maxCrossingSubArray_rightLoop
+            lea     r14, [r8 + r9]
+            mov     rdi, SubArray_size
+            call    malloc
+            mov     dword [rax + SubArray.loIdx], r12d
+            mov     dword [rax + SubArray.hiIdx], r13d
+            mov     dword [rax + SubArray.sum], r14d
+            pop     r14
+            pop     r12
+            pop     r13
             ret
