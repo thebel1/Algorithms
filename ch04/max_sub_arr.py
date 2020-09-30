@@ -29,7 +29,7 @@ def maxSubArray(arr, loIdx, hiIdx):
         crossSum = tmp[2]
         if leftSum >= rightSum and leftSum >= crossSum:
             return [leftLo, leftHi, leftSum]
-        elif rightSum >= leftSum and rightSum >= crossSum:
+        elif rightSum >= crossSum:
             return [rightLo, rightHi, rightSum]
         else:
             return [crossLo, crossHi, crossSum]

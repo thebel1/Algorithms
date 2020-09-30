@@ -72,8 +72,7 @@ SubArray *maxSubArray(int *arr, int loIdx, int hiIdx)
         free(crossSubArr);
         goto leave;
     }
-    else if (rightSubArr->sum >= leftSubArr->sum
-        && rightSubArr->sum >= crossSubArr->sum)
+    else if (rightSubArr->sum >= crossSubArr->sum)
     {
         subArr = rightSubArr;
         free(leftSubArr);
