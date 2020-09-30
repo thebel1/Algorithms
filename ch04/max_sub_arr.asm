@@ -15,7 +15,8 @@ endstruc
 
             section .data
 
-outFmt      db      "%d", 0xa, 0x0
+subArrFmt   db      "[%d, %d, %d]", 0xa, 0x0
+numFmt      db      "%d", 0xa, 0x0
 
             section .text
 
@@ -58,13 +59,20 @@ main_PrepLoop:
             lea     rdx, [r12 - 0x1]
             call    maxSubArray
             mov     rbx, rax
-            mov     r15, 0x0
-            ud2
+            mov     rdi, subArrFmt
+            mov     esi, dword [rbx + SubArray.loIdx]
+            mov     edx, dword [rbx + SubArray.hiIdx]
+            mov     ecx, dword [rbx + SubArray.sum]
+            call    printf
+            mov     r15d, dword [rbx + SubArray.loIdx]
+            mov     r12d, dword [rbx + SubArray.hiIdx]
 main_PrintLoop:
-            ud2
+            mov     rdi, numFmt
+            mov     esi, dword [r14 + r15*0x4]
+            call    printf
             inc     r15
             cmp     r15, r12
-            jl      main_PrintLoop
+            jle     main_PrintLoop
 main_Leave:
             ud2
             mov     rdi, rbx
@@ -120,17 +128,17 @@ maxSubArray:
             mov     edx, dword [rdx + SubArray.sum]
             mov     r10, 0x1
             mov     r11, 0x0
-            cmp     rax, rcx
+            cmp     eax, ecx
             cmovl   r10, r11
-            cmp     rax, rdx
+            cmp     eax, edx
             cmovl   r10, r11
             test    r10, r10
             cmovne  rax, qword [rsp + 0x10]
             jne     maxSubArray_Leave
             mov     r10, 0x1
-            cmp     rcx, rax
+            cmp     ecx, eax
             cmovl   r10, r11
-            cmp     rcx, rdx
+            cmp     ecx, edx
             cmovl   r10, r11
             test    r10, r10
             cmovne  rax, qword [rsp + 0x8]
@@ -171,7 +179,7 @@ maxCrossingSubArray:
             mov     r11, rdx
 maxCrossingSubArray_leftLoop:
             add     r10d, dword [rdi + r11*0x4]
-            cmp     r10, r8
+            cmp     r10d, r8d
             cmovg   r8, r10
             cmovg   r12, r11
             dec     r11
@@ -181,7 +189,7 @@ maxCrossingSubArray_leftLoop:
             lea     r11, [rdx + 0x1]
 maxCrossingSubArray_rightLoop:
             add     r10d, dword [rdi + r11*0x4]
-            cmp     r10, r9
+            cmp     r10d, r9d
             cmovg   r9, r10
             cmovg   r13, r11
             inc     r11
