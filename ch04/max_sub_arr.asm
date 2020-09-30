@@ -37,7 +37,6 @@ main:
             push    r14
             push    r15
             push    rbx
-            ;sub     rsp, 0x8
             mov     r12, rdi
             mov     r13, rsi
             cmp     r12, 0x3
@@ -74,12 +73,10 @@ main_PrintLoop:
             cmp     r15, r12
             jle     main_PrintLoop
 main_Leave:
-            ud2
             mov     rdi, rbx
             call    free
             mov     rdi, r14
             call    free
-            ;add     rsp, 0x8
             pop     rbx
             pop     r15
             pop     r14
@@ -121,30 +118,52 @@ maxSubArray:
             call    maxCrossingSubArray
             mov     qword [rsp], rax
             mov     rax, qword [rsp + 0x10]
-            mov     eax, dword [rax + SubArray.sum]
-            mov     rcx, qword [rsp + 0x8]
-            mov     ecx, dword [rcx + SubArray.sum]
-            mov     rdx, qword [rsp]
-            mov     edx, dword [rdx + SubArray.sum]
+            mov     r12d, dword [rax + SubArray.sum]
+            mov     rax, qword [rsp + 0x8]
+            mov     r13d, dword [rax + SubArray.sum]
+            mov     rax, qword [rsp]
+            mov     r14d, dword [rax + SubArray.sum]
             mov     r10, 0x1
             mov     r11, 0x0
-            cmp     eax, ecx
+            cmp     r12d, r13d
             cmovl   r10, r11
-            cmp     eax, edx
+            cmp     r12d, r14d
             cmovl   r10, r11
             test    r10, r10
-            cmovne  rax, qword [rsp + 0x10]
-            jne     maxSubArray_Leave
+            jne     maxSubArray_LeaveLeft
             mov     r10, 0x1
-            cmp     ecx, eax
-            cmovl   r10, r11
-            cmp     ecx, edx
-            cmovl   r10, r11
-            test    r10, r10
-            cmovne  rax, qword [rsp + 0x8]
-            jne     maxSubArray_Leave
+            cmp     r13d, r14d
+            jge     maxSubArray_LeaveRight
+maxSubArray_LeaveCross:
+            mov     rdi, qword [rsp + 0x10]
+            call    free
+            mov     rdi, qword [rsp + 0x8]
+            call    free
             mov     rax, qword [rsp]
-maxSubArray_Leave:
+            add     rsp, 0x18
+            pop     r15
+            pop     r14
+            pop     r13
+            pop     r12
+            ret
+maxSubArray_LeaveRight:
+            mov     rdi, qword [rsp + 0x10]
+            call    free
+            mov     rdi, qword [rsp]
+            call    free
+            mov     rax, qword [rsp + 0x8]
+            add     rsp, 0x18
+            pop     r15
+            pop     r14
+            pop     r13
+            pop     r12
+            ret
+maxSubArray_LeaveLeft:
+            mov     rdi, qword [rsp + 0x8]
+            call    free
+            mov     rdi, qword [rsp]
+            call    free
+            mov     rax, qword [rsp + 0x10]
             add     rsp, 0x18
             pop     r15
             pop     r14
