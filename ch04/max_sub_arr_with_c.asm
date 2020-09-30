@@ -31,6 +31,8 @@ numFmt      db      "%d", 0xa, 0x0
 ;   r15     int i
 ;   rbx     SubArray *subArr
 ; ------------------------------------------------------------------------------
+;   int main(int argc, char **argv)
+;   {
 main:
             push    r12
             push    r13
@@ -39,8 +41,14 @@ main:
             push    rbx
             mov     r12, rdi
             mov     r13, rsi
+
+;       if (argc < 3) {
+;           goto main_Leave;
+;       }
             cmp     r12, 0x3
             jl      main_Leave
+
+;       int *arr = malloc((argc - 1) * sizeof(int));
             lea     rdi, [(r12 - 0x1)*0x4]
             call    malloc
             mov     r14, rax
