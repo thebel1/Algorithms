@@ -1,5 +1,6 @@
             default rel
             global  main
+            extern  atoi
             extern  malloc
             extern  free
             extern  printf
@@ -28,52 +29,106 @@ newline     db  0xa, 0x0
 ; -- int main(int argc, char **argv);
 ; ------------------------------------------------------------------------------
 main:
-            ud2
+            push    r12
+            push    r13
+            push    r14
+            push    r15
+            sub     rsp, 0x8
+            mov     r12d, edi
+            mov     r13, rsi
+            cmp     r12d, 0x3
+            jl      main_leave
+            dec     r12d
+            lea     rdi, [r12 * 0x4]
+            call    malloc
+            mov     r14, rax
+            mov     r15d, 0x0
+main_prepLoop:
+            mov     rdi, qword [r13 + r15*0x8 + 0x8]
+            call    atoi
+            mov     dword [r14 + r15*0x4], eax
+            inc     r15d
+            cmp     r15d, r12d
+            jl      main_prepLoop
+            mov     rdi, r14
+            mov     esi, r12d
+            call    heapSort
+            xor     r15d, r15d
+main_printLoop:
+            mov     rdi, outFmt
+            mov     esi, dword [r14 + r15*0x4]
+            call    printf
+            inc     r15d
+            cmp     r15d, r12d
+            jl      main_printLoop
+            mov     rdi, newline
+            call printf
+            mov     rdi, r14
+            call    free
+main_leave:
+            add     rsp, 0x8
+            pop     r15
+            pop     r14
+            pop     r13
+            pop     r12
             ret
 
 ; ------------------------------------------------------------------------------
 ; -- void buildMaxHeap(int *A, int heapSize);
 ; ------------------------------------------------------------------------------
 buildMaxHeap:
-            ud2
+            push    r12
+            push    r13
+            push    r14
+            mov     r12, rdi
+            mov     r13d, esi
+            mov     r14d, esi
+            shr     r14d, 0x1
+buildMaxHeap_loop:
+            mov     rdi, r12
+            mov     esi, r13d
+            mov     edx, r14d
+            call    maxHeapify
+            dec     r14d
+            cmp     r14d, 0x0
+            jge     buildMaxHeap_loop
+            pop     r14
+            pop     r13
+            pop     r12
             ret
 
 ; ------------------------------------------------------------------------------
 ; -- void maxHeapify(int *A, int heapSize, int i);
 ; ------------------------------------------------------------------------------
-maxHeapify:
-            xor     ecx, ecx
-            mov     r8, rdx
+maxHeapify:            
+            mov     r8d, edx
             LEFT(r8d)
-            mov     r9, rdx
+            mov     r9d, edx
             RIGHT(r9d)
-            mov     r10d, 0x1
-            xor     r11d, r11d
             cmp     r8d, esi
-            cmovge  r10, r11
+            jge     maxHeapify_else1
             mov     eax, dword [rdi + r8*0x4]
             cmp     eax, dword [rdi + rdx*0x4]
-            cmovle  r10, r11
-            test    r10b, r10b
-            cmovne  rcx, r8
-            mov     r10d, 0x1
+            cmovg   rcx, r8
+            jg      maxHeapify_if2
+maxHeapify_else1:
+            mov     ecx, edx
+maxHeapify_if2:
             cmp     r9d, esi
-            cmovge  r10, r11
-            mov     eax, dword [rdi + r9*0x4]     
+            jge     maxHeapify_if3
+            mov     eax, dword [rdi + r9*0x4]
             cmp     eax, dword [rdi + rcx*0x4]
-            cmovle  r10, r11
-            test    r10b, r10b
-            cmovne  ecx, r9
+            cmovg   rcx, r9
+maxHeapify_if3:
             cmp     ecx, edx
-            jne     maxHeapify_leave
-            mov     r10d, dword [rdi + rdx*0x4]
+            je      maxHeapify_leave
+            mov     r10d, dword [rdi + rdx*0x4]   
             mov     r11d, dword [rdi + rcx*0x4]
             mov     dword [rdi + rdx*0x4], r11d
             mov     dword [rdi + rcx*0x4], r10d
-            mov     esi, ecx
+            mov     edx, ecx
             jmp     maxHeapify
 maxHeapify_leave:
-            ud2
             ret
 
 ; ------------------------------------------------------------------------------
@@ -94,7 +149,8 @@ heapSort_loop:
             mov     dword [r12], edx
             dec     r13
             mov     rdi, r12
-            mov     esi, 0x0
+            mov     esi, r13d
+            mov     edx, 0x0
             call    maxHeapify
             dec     r14d
             test    r14b, r14b
